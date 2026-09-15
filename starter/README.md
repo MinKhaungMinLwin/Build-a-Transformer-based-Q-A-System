@@ -1,8 +1,10 @@
-# Transformer-Based Semantic Retrieval System - Starter
+# Transformer-Based Semantic Retrieval System
 
-## Welcome to Your Retrieval System Project! 🎯
+## Project overview
 
-This project will guide you through building and comparing different retrieval systems, from traditional keyword-based search to modern semantic search using transformers. You'll experience the evolution of information retrieval and understand the foundations of RAG (Retrieval-Augmented Generation) systems.
+This completed project implements and compares three retrieval systems: BM25 keyword search, averaged Word2Vec embeddings, and Sentence Transformer embeddings. All methods expose the same `build_index` and `retrieve` workflow and are evaluated with Recall@k, Precision@k, and Mean Reciprocal Rank.
+
+The included notebook runs a reproducible comparison on the bundled TechFlow corpus, tunes Word2Vec parameters, shows ranked results, and visualizes transformer document/query embeddings with PCA. The Streamlit application runs the same three retrievers together and can optionally send retrieved context to an OpenAI generator.
 
 ## Project Structure
 
@@ -34,29 +36,26 @@ project/starter/
 
 ## Quick Start Guide
 
-### **🔧 Environment Setup (Already Done!)**
-Your environment is ready with all dependencies installed. To verify:
+### **🔧 Environment setup**
 
 ```bash
-# Navigate to starter directory
-cd project/starter
+# From the repository root
+cd starter
 
-# Check that virtual environment is working
-source .venv/bin/activate  # Linux/Mac
-# .venv\Scripts\activate    # Windows
-
-# Verify installation
-python -c "import sentence_transformers; print('✅ All dependencies ready!')"
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+python -m pip install pytest
 ```
 
-### **🧪 Validate Your Implementation**
-As you complete each component, run the corresponding tests to validate your work:
+### **🧪 Validate the implementation**
+Run the corresponding tests to validate the project:
 
 ```bash
-# Run all tests (initially many will fail - this is expected!)
+# Run all tests
 python -m pytest tests/ -v
 
-# Test individual components as you implement them
+# Test individual components
 python tests/test_bm25_retriever.py        # BM25 keyword search implementation
 python tests/test_evaluator.py             # IR metrics calculation
 python tests/test_word2vec_retriever.py     # Word2Vec embedding implementation  
@@ -66,10 +65,7 @@ python tests/test_transformer_retriever.py  # Transformer semantic search
 python -m pytest tests/ -v
 ```
 
-**Expected progression:**
-- **Initially**: Many tests fail with helpful error messages
-- **During implementation**: Tests pass as you complete each section
-- **Final result**: All tests pass, confirming your implementation
+**Expected result:** 20 tests pass.
 
 ### **🎮 Try the Interactive Demo**
 ```bash
@@ -84,20 +80,24 @@ cp .env.example .env
 streamlit run app.py
 ```
 
-### **🔬 Run the Analysis**
+### **🔬 Run the analysis**
 ```bash
 # Start Jupyter for the main analysis
 jupyter lab notebooks/unified_retrieval_comparison.ipynb
 ```
 
+## How retrieval fits into RAG
+
+For each question, a retriever ranks the corpus and supplies the best passages as context to a generator model. The generator answers from that evidence instead of relying only on parameters learned during training. BM25 offers efficient exact-term matching, Word2Vec introduces context-independent word semantics, and sentence transformers encode the contextual meaning of complete passages. Production RAG systems often combine sparse and dense retrieval and add reranking, citations, access controls, and freshness checks.
+
 ## Implementation Guide
 
-### **📚 Source Files You'll Need to Implement**
+### **📚 Implemented source files**
 
-Your task is to complete the missing implementations in the core retrieval modules. Each file contains detailed "YOUR CODE HERE" sections with guidance:
+The core retrieval modules are complete and share compatible index/retrieve interfaces:
 
 #### **🔧 `src/bm25_retriever.py` - Traditional Keyword Search**
-**What you'll implement:**
+**Implemented features:**
 - **Text tokenization** and preprocessing for BM25 scoring
 - **BM25 index creation** using the rank-bm25 library
 - **Retrieval logic** to find and rank top-k documents
@@ -106,7 +106,7 @@ Your task is to complete the missing implementations in the core retrieval modul
 **Key concepts:** Tokenization, BM25 scoring, keyword matching, document frequency
 
 #### **🔤 `src/word2vec_retriever.py` - Static Word Embeddings**
-**What you'll implement:**
+**Implemented features:**
 - **Text preprocessing** for Word2Vec training (stopwords, tokenization)
 - **Word2Vec model training** with gensim library
 - **Document vectorization** by averaging word embeddings
@@ -116,7 +116,7 @@ Your task is to complete the missing implementations in the core retrieval modul
 **Key concepts:** Word embeddings, vector averaging, cosine similarity, hyperparameter tuning
 
 #### **🤖 `src/transformer_retriever.py` - Modern Semantic Search**
-**What you'll implement:**
+**Implemented features:**
 - **Corpus encoding** using sentence transformers
 - **Query encoding** with the same transformer model
 - **Semantic similarity computation** and top-k retrieval
@@ -125,7 +125,7 @@ Your task is to complete the missing implementations in the core retrieval modul
 **Key concepts:** Sentence embeddings, contextual understanding, transformer models, semantic similarity
 
 #### **📊 `src/evaluator.py` - Information Retrieval Metrics**
-**What you'll implement:**
+**Implemented features:**
 - **Recall@k calculation**: Fraction of relevant documents found
 - **Precision@k calculation**: Fraction of retrieved documents that are relevant  
 - **Mean Reciprocal Rank (MRR)**: Quality of first relevant result
@@ -148,18 +148,18 @@ Contains utility functions for text processing and system operations. **No imple
 
 ### **🧪 Testing Your Implementation**
 
-Each component has focused tests that will **fail until you implement the core functionality**:
+Each component has focused tests for its core functionality:
 
 ```bash
-# Test individual components as you implement them
-python tests/test_bm25_retriever.py        # Should show 4/5 tests failing initially
-python tests/test_evaluator.py             # Should show 4/5 tests failing initially  
-python tests/test_word2vec_retriever.py     # Should show 4/5 tests failing initially
-python tests/test_transformer_retriever.py  # Should show 4/5 tests failing initially
+# Test individual components
+python tests/test_bm25_retriever.py
+python tests/test_evaluator.py
+python tests/test_word2vec_retriever.py
+python tests/test_transformer_retriever.py
 ```
 
 **Success indicators:**
-- Tests pass once you complete the implementation
+- All 20 provided tests pass
 - Error messages guide you to missing functionality
 - Each test validates core concepts you need to understand
 

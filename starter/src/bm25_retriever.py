@@ -31,11 +31,9 @@ class BM25Retriever:
         print("🔧 Building BM25 index...")
         self.corpus = list(corpus_texts)
         
-        # YOUR CODE HERE: Tokenize each document in corpus_texts
         # Convert each document to lowercase and split into tokens
         tokenized_corpus = [document.lower().split() for document in corpus_texts]
         
-        # YOUR CODE HERE: Create BM25Okapi index using tokenized_corpus
         # Use self.k1 and self.b parameters
         self.bm25 = BM25Okapi(tokenized_corpus, k1=self.k1, b=self.b)
         
@@ -53,13 +51,10 @@ class BM25Retriever:
         results = {}
         
         for q_idx, query in enumerate(tqdm(query_texts, desc="Retrieving")):
-            # YOUR CODE HERE: Tokenize the query (same as corpus tokenization)
             tokenized_query = query.lower().split()
             
-            # YOUR CODE HERE: Get BM25 scores for all documents using tokenized_query
             doc_scores = self.bm25.get_scores(tokenized_query)
             
-            # YOUR CODE HERE: Find top-k document indices with highest scores
             # Use np.argsort with reverse order and slice to k
             limit = min(k, len(self.corpus))
             # Stable sorting makes ties deterministic (lower document ID first).

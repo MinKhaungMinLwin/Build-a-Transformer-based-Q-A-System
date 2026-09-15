@@ -91,8 +91,8 @@ def initialize_retrievers():
         bm25 = BM25Retriever()
         bm25.build_index(CORPUS_TEXTS)
         
-        # Transformer Retriever - use a more powerful model for better performance
-        transformer = TransformerRetriever(model_name="all-mpnet-base-v2")
+        # Match the lightweight, well-tested model used by the notebook.
+        transformer = TransformerRetriever(model_name="all-MiniLM-L6-v2")
         transformer.build_index(CORPUS_TEXTS)
         
         # Word2Vec Retriever - optimized for small corpus
@@ -109,7 +109,7 @@ def initialize_retrievers():
     return {
         "BM25 (Keywords)": bm25,
         "Word2Vec (Static Embeddings)": word2vec,
-        "Transformer (MPNet-base-v2)": transformer
+        "Transformer (MiniLM-L6-v2)": transformer
     }
 
 def evaluate_retrieval(query: str, retrieved_indices: List[int], ground_truth: List[int]) -> Dict[str, float]:

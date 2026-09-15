@@ -18,7 +18,7 @@ from gensim.models import Word2Vec
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
 import re
-from typing import List, Optional, Dict
+from typing import List, Dict
 import logging
 
 # Restore stderr
@@ -74,7 +74,7 @@ class Word2VecRetriever:
         
         return words
     
-    def _text_to_vector(self, text: str) -> Optional[np.ndarray]:
+    def _text_to_vector(self, text: str) -> np.ndarray:
         """
         Convert text to vector by averaging word vectors.
         
@@ -82,7 +82,7 @@ class Word2VecRetriever:
             text (str): Input text
             
         Returns:
-            np.ndarray: Document vector (or None if no words found)
+            np.ndarray: Averaged vector, or a zero vector when all words are OOV
         """
         words = self._preprocess_text(text)
         word_vectors = []
@@ -90,7 +90,6 @@ class Word2VecRetriever:
         if self.model is None:
             raise ValueError("Index not built. Call build_index() first.")
         
-        # YOUR CODE HERE: Extract word vectors from trained model
         # For each word, check if it exists in self.model.wv and add to word_vectors
         for word in words:
             # Check if word exists in vocabulary and add vector
@@ -98,7 +97,6 @@ class Word2VecRetriever:
                 word_vectors.append(self.model.wv[word])
         
         if word_vectors:
-            # YOUR CODE HERE: Average word vectors to get document vector
             # Use np.mean() along the correct axis
             return np.mean(word_vectors, axis=0)
         else:
@@ -117,13 +115,11 @@ class Word2VecRetriever:
 
         logger.info("Building Word2Vec model...")
         
-        # YOUR CODE HERE: Preprocess all documents for training
         # Use self._preprocess_text() on each document in corpus_texts
         processed_docs = [self._preprocess_text(document) for document in corpus_texts]
         if not any(processed_docs):
             raise ValueError("corpus contains no usable words after preprocessing")
         
-        # YOUR CODE HERE: Train Word2Vec model
         # Create Word2Vec instance with self parameters (vector_size, window, etc.)
         self.model = Word2Vec(
             sentences=processed_docs,
@@ -138,11 +134,9 @@ class Word2VecRetriever:
         
         logger.info(f"Word2Vec model trained with vocabulary")
         
-        # YOUR CODE HERE: Convert all documents to vectors using trained model
         # Use self._text_to_vector() on each document and store in list
         self.corpus_vectors = [self._text_to_vector(document) for document in corpus_texts]
         
-        # YOUR CODE HERE: Convert list to numpy array and store corpus_texts
         self.corpus_vectors = np.asarray(self.corpus_vectors)
         self.corpus_texts = list(corpus_texts)
         
@@ -167,17 +161,14 @@ class Word2VecRetriever:
         results = {}
         
         for q_idx, query in enumerate(queries):
-            # YOUR CODE HERE: Convert query to vector using _text_to_vector
             query_vector = self._text_to_vector(query)
             
             if query_vector is not None:
-                # YOUR CODE HERE: Calculate cosine similarities between query and corpus
                 # Use cosine_similarity from sklearn.metrics.pairwise
                 similarities = cosine_similarity(
                     query_vector.reshape(1, -1), self.corpus_vectors
                 )[0]
                 
-                # YOUR CODE HERE: Get top-k most similar document indices
                 # Use np.argsort with reverse order and slice to k
                 limit = min(k, len(self.corpus_texts))
                 top_indices = np.argsort(-similarities, kind="stable")[:limit]
@@ -212,7 +203,7 @@ class Word2VecRetriever:
                 # Properly clean up the model
                 del self.model.wv
                 del self.model
-        except:
+        except Exception:
             pass  # Silently ignore any cleanup errors
 
     @staticmethod
@@ -236,7 +227,6 @@ class Word2VecRetriever:
         print(f"🔧 Starting Word2Vec Parameter Optimization")
         print(f"📋 Testing {len(param_combinations)} configurations...")
 
-        # YOUR CODE HERE: Initialize tracking variables
         # Set up best_config, best_score, best_metrics, and results_log
         best_config = None
         best_score = float("-inf")
@@ -252,27 +242,22 @@ class Word2VecRetriever:
                 stderr_suppressor = StringIO()
 
                 with redirect_stderr(stderr_suppressor):
-                    # YOUR CODE HERE: Create and train Word2Vec retriever with current params
                     # Initialize retriever with **params and build index with corpus_texts
                     test_retriever = Word2VecRetriever(**params)
                     test_retriever.build_index(corpus_texts)
                     
-                    # YOUR CODE HERE: Run retrieval evaluation
                     # Use retriever to get results for query_texts with k=20
                     test_results = test_retriever.retrieve(query_texts, k=20)
 
-                    # YOUR CODE HERE: Evaluate performance using evaluator_class
                     # Call evaluate_retrieval with test_results and qrels_dict
                     test_metrics = evaluator_class.evaluate_retrieval(
                         test_results, qrels_dict
                     )
 
-                    # YOUR CODE HERE: Extract key metrics for comparison
                     # Get MRR and Recall@5 from test_metrics
                     mrr_score = test_metrics["MRR"]
                     recall_5 = test_metrics["Recall@5"]
 
-                    # YOUR CODE HERE: Log results for this configuration
                     # Append dict with config, mrr, recall_5, and metrics to results_log
                     results_log.append({
                         "config": dict(params),
@@ -286,7 +271,6 @@ class Word2VecRetriever:
 
                 print(f"   📊 MRR: {mrr_score:.4f} | Recall@5: {recall_5:.4f}")
 
-                # YOUR CODE HERE: Update best configuration if current is better
                 # Compare mrr_score with best_score and update if improved
                 if mrr_score > best_score:
                     best_score = mrr_score
@@ -301,7 +285,6 @@ class Word2VecRetriever:
         print(f"\n🏆 OPTIMIZATION COMPLETE")
         print(f"=" * 50)
 
-        # YOUR CODE HERE: Return optimization results
         # Return dict with best_config, best_score, best_metrics, and results_log
         if best_config is None:
             best_score = None
