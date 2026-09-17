@@ -4,7 +4,7 @@
 
 This completed project implements and compares three retrieval systems: BM25 keyword search, averaged Word2Vec embeddings, and Sentence Transformer embeddings. All methods expose the same `build_index` and `retrieve` workflow and are evaluated with Recall@k, Precision@k, and Mean Reciprocal Rank.
 
-The included notebook runs a reproducible comparison on the bundled TechFlow corpus, tunes Word2Vec parameters, shows ranked results, and visualizes transformer document/query embeddings with PCA. The Streamlit application runs the same three retrievers together and can optionally send retrieved context to an OpenAI generator.
+The included notebook runs a reproducible comparison on a 2,000-query sample of the BEIR Natural Questions test set loaded through the provided `DataLoader`. It tunes Word2Vec parameters, reports and compares all required metrics, shows ranked results, and visualizes transformer document/query embeddings with PCA. The small TechFlow corpus is used only by the Streamlit demo application, where all three retrievers can optionally send retrieved context to an OpenAI generator.
 
 ## Project Structure
 
