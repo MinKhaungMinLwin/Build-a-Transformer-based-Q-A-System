@@ -1,0 +1,39 @@
+{
+  "component": "bm25_retriever",
+  "timestamp": "2026-09-15T23:53:44.054950",
+  "total_tests": 5,
+  "passed_tests": 5,
+  "failed_tests": 0,
+  "test_details": [
+    {
+      "test_name": "test_build_index_implementation",
+      "passed": true,
+      "error_message": null,
+      "timestamp": "2026-09-15T23:53:44.039429"
+    },
+    {
+      "test_name": "test_initialization",
+      "passed": true,
+      "error_message": null,
+      "timestamp": "2026-09-15T23:53:44.039911"
+    },
+    {
+      "test_name": "test_k_parameter_functionality",
+      "passed": true,
+      "error_message": null,
+      "timestamp": "2026-09-15T23:53:44.050017"
+    },
+    {
+      "test_name": "test_multiple_queries",
+      "passed": true,
+      "error_message": null,
+      "timestamp": "2026-09-15T23:53:44.054181"
+    },
+    {
+      "test_name": "test_retrieve_implementation",
+      "passed": true,
+      "error_message": null,
+      "timestamp": "2026-09-15T23:53:44.054878"
+    }
+  ]
+}
